@@ -4,7 +4,6 @@ ENV ACCEPT_EULA=Y
 
 # Update gnupg
 RUN apt-get update && apt-get install -my wget gnupg
-
 # Microsoft SQL Server Prerequisites
 # RUN apt-get update \
 #    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
@@ -45,8 +44,17 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # INSTALL LARAVEL
 # RUN composer create-project --prefer-dist laravel/laravel .
-RUN chmod 777 -R /var/www/html/storage && chmod 777 -R /var/www/html/bootstrap/cache
-RUN php artisan config:clear && php artisan config:cache
 
 # INSTALL Excel
 # RUN composer require maatwebsite/excel
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get update && apt-get install -y nodejs
+
+COPY src /var/www/html
+
+RUN chmod +x /var/www/html/src/startup.sh
+
+#RUN chmod +x /var/www/html/src/compile.sh
+
+ENTRYPOINT ["/var/www/html/src/startup.sh"]
